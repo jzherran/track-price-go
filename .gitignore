@@ -1,7 +1,4 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/go
-# Edit at https://www.toptal.com/developers/gitignore?templates=go
-
 ### Go ###
 # Binaries for programs and plugins
 *.exe
@@ -22,6 +19,7 @@
 ### Go Patch ###
 /vendor/
 /Godeps/
+/bin/
 
-# End of https://www.toptal.com/developers/gitignore/api/go
-
+### VSCode ###
+/.vscode/
