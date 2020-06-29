@@ -1,8 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
 
-import "github.com/gocolly/colly/v2"
+	"github.com/gocolly/colly/v2"
+)
 
 func main() {
 
