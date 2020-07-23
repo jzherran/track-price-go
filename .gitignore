@@ -23,3 +23,9 @@
 
 ### VSCode ###
 /.vscode/
+
+### OS files ####
+.DS_Store
+
+### Project resources ###
+resources/*.json
