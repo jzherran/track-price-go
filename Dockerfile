@@ -1,18 +1,11 @@
-FROM --platform=${BUILDPLATFORM} golang:1.14.3-alpine AS build
-WORKDIR /src
-ENV CGO_ENABLED=0
+FROM golang:1.14
+
+WORKDIR /app
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+
 COPY . .
-ARG TARGETOS
-ARG TARGETARCH
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o /out/track-price-go .
-
-FROM scratch AS bin-unix
-COPY --from=build /out/track-price-go /
-
-FROM bin-unix AS bin-linux
-FROM bin-unix AS bin-darwin
-
-FROM scratch AS bin-windows
-COPY --from=build /out/track-price-go /track-price-go.exe
-
-FROM bin-${TARGETOS} AS bin
+EXPOSE 8080
+ENV APP_DIR="/app"
+CMD ["/app/run.sh"]
