@@ -1,14 +1,89 @@
 package main
 
 import (
-	"fmt"
+	"context"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
-	"github.com/gocolly/colly/v2"
+	"github.com/go-chi/chi"
+	"github.com/jzherran/track-price-go/internal/google"
+	"github.com/jzherran/track-price-go/trackitem/register"
 )
 
-func main() {
+type (
+	// Middleware struct to manage middlewares added in router http.
+	Middleware func(http.Handler) http.Handler
+)
 
-	// List of items with urls
+// NewHTTPRouter init the router http instance.
+func NewHTTPRouter(middlewares ...Middleware) chi.Router {
+	router := chi.NewRouter()
+
+	log.Printf("Registering %d middlewares into the http server", len(middlewares))
+
+	for _, middleware := range middlewares {
+		router.Use(middleware)
+	}
+
+	return router
+}
+
+// StartHTTPServer init http server.
+func StartHTTPServer(ctx context.Context, router chi.Router) {
+	srv := &http.Server{
+		Addr:         ":8080",
+		Handler:      router,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen:%+s\n", err)
+		}
+	}()
+
+	<-ctx.Done()
+
+	if err := srv.Shutdown(context.Background()); err != nil {
+		log.Fatalf("server Shutdown Failed:%+s", err)
+	}
+}
+
+func main() {
+	// create dependencies
+	middlewares := []Middleware{
+		NewTimeoutMiddleware(),
+		NewHTTPRecovererMiddleware(),
+		NewRequestIDMiddleware(),
+	}
+	router := NewHTTPRouter(middlewares...)
+	ds, err := google.NewGSheetService()
+	if err != nil {
+		panic(err)
+	}
+
+	// Configure our application modules
+	register.SetupModule(router, ds)
+
+	// start the application
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() {
+		<-done
+		cancel()
+	}()
+	StartHTTPServer(ctx, router)
+}
+
+/*
+
+// List of items with urls
 	data := make(map[string]string)
 
 	data["nevera:alkosto"] = "https://www.alkosto.com/nevera-samsung-394-litros-negro-rt38k5992bs"
@@ -30,4 +105,5 @@ func main() {
 		fmt.Println("Iterate")
 		c.Visit(url)
 	}
-}
+
+*/
