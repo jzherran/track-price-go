@@ -57,7 +57,7 @@ func main() {
 	// create dependencies
 	middleware := []Middleware{
 		NewTimeoutMiddleware(),
-		NewHTTPRecoverMiddleware(),
+		NewHTTPRecovererMiddleware(),
 		NewRequestIDMiddleware(),
 	}
 	router := NewHTTPRouter(middleware...)
