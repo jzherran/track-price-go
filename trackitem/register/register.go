@@ -6,8 +6,8 @@ import (
 )
 
 // SetupModule configure and start the module to register track items
-func SetupModule(router chi.Router, ds internal.Datasource) {
-	repo := NewTrackItemRetriverRepository(ds)
+func SetupModule(router chi.Router, ds internal.DataSource) {
+	repo := NewTrackItemRetrieverRepository(ds)
 
 	handler := NewTrackItemHandler(repo)
 

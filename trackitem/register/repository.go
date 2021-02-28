@@ -10,19 +10,19 @@ import (
 
 type (
 	repository struct {
-		datasource internal.Datasource
+		datasource internal.DataSource
 	}
 )
 
-// NewTrackItemRetriverRepository instance of a repository.
-func NewTrackItemRetriverRepository(ds internal.Datasource) TrackItemManager {
+// NewTrackItemRetrieverRepository instance of a repository.
+func NewTrackItemRetrieverRepository(ds internal.DataSource) TrackItemManager {
 	return repository{
 		datasource: ds,
 	}
 }
 
 func (r repository) FindAllTrackItems(ctx context.Context) (trackitem.TrackItems, error) {
-	result := []trackitem.TrackItem{}
+	var result []trackitem.TrackItem
 	result = append(result, trackitem.TrackItem{
 		Name:    "[alkosto::nevera]",
 		URLLink: "https://www.alkosto.com/nevera-samsung-394-litros-negro-rt38k5992bs",

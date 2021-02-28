@@ -12,7 +12,7 @@ func NewTimeoutMiddleware() Middleware {
 	return middleware.Timeout(DefaultHTTPTimeout)
 }
 
-func NewHTTPRecovererMiddleware() Middleware {
+func NewHTTPRecoverMiddleware() Middleware {
 	return middleware.Recoverer
 }
 

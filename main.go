@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
-	"github.com/jzherran/track-price-go/internal/google"
 	"github.com/jzherran/track-price-go/trackitem/register"
 )
 
@@ -43,7 +42,7 @@ func StartHTTPServer(ctx context.Context, router chi.Router) {
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen:%+s\n", err)
+			log.Fatalf("listen: %s\n", err)
 		}
 	}()
 
@@ -56,19 +55,19 @@ func StartHTTPServer(ctx context.Context, router chi.Router) {
 
 func main() {
 	// create dependencies
-	middlewares := []Middleware{
+	middleware := []Middleware{
 		NewTimeoutMiddleware(),
-		NewHTTPRecovererMiddleware(),
+		NewHTTPRecoverMiddleware(),
 		NewRequestIDMiddleware(),
 	}
-	router := NewHTTPRouter(middlewares...)
-	ds, err := google.NewGSheetService()
+	router := NewHTTPRouter(middleware...)
+	/* ds, err := google.NewGSheetService()
 	if err != nil {
 		panic(err)
-	}
+	}*/
 
 	// Configure our application modules
-	register.SetupModule(router, ds)
+	register.SetupModule(router, nil)
 
 	// start the application
 	done := make(chan os.Signal, 1)
