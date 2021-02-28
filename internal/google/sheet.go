@@ -22,14 +22,14 @@ const (
 
 type (
 
-	// GSheetService is a client created for communicating with Google Sheets
-	GSheetService struct {
+	// GSheetDatasource is a client created for communicating with Google Sheets
+	GSheetDatasource struct {
 		extService *sheets.Service
 	}
 )
 
-// NewGSheetService initialize a new google sheet service instance
-func NewGSheetService() (GSheetService, error) {
+// NewGSheetDatasource initialize a new google sheet service instance
+func NewGSheetDatasource() (GSheetDatasource, error) {
 	b, err := ioutil.ReadFile(fmt.Sprintf(resourcesPath, "credentials.json"))
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
@@ -47,11 +47,20 @@ func NewGSheetService() (GSheetService, error) {
 		log.Fatalf("Unable to retrieve Sheets client: %v", err)
 	}
 
-	return GSheetService{extService: srv}, nil
+	return GSheetDatasource{extService: srv}, nil
 }
 
-func (gss GSheetService) Read(dataRange string) [][]interface{} {
-	resp, err := gss.extService.Spreadsheets.Values.Get(spreadsheetID, dataRange).Do()
+func (gsd GSheetDatasource) Read(dataRange string) [][]interface{} {
+	resp, err := gsd.extService.Spreadsheets.Values.Get(spreadsheetID, dataRange).Do()
+	if err != nil {
+		log.Fatalf("Unable to retrieve data from sheet: %v", err)
+	}
+
+	return resp.Values
+}
+
+func (gsd GSheetDatasource) Write(dataRange string) [][]interface{} {
+	resp, err := gsd.extService.Spreadsheets.Values.Get(spreadsheetID, dataRange).Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve data from sheet: %v", err)
 	}

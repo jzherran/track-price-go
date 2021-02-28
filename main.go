@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
+	"github.com/jzherran/track-price-go/internal/google"
 	"github.com/jzherran/track-price-go/trackitem/register"
 )
 
@@ -61,13 +62,13 @@ func main() {
 		NewRequestIDMiddleware(),
 	}
 	router := NewHTTPRouter(middleware...)
-	/* ds, err := google.NewGSheetService()
+	ds, err := google.NewGSheetDatasource()
 	if err != nil {
 		panic(err)
-	}*/
+	}
 
 	// Configure our application modules
-	register.SetupModule(router, nil)
+	register.SetupModule(router, ds)
 
 	// start the application
 	done := make(chan os.Signal, 1)
